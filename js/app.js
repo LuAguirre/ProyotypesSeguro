@@ -6,11 +6,6 @@ function Seguro(marca, anio, tipo, agencia) {
      this.agencia = agencia;
 }
 Seguro.prototype.cotizarSeguro = function() {
-     /*
-          1 = americano 1.15
-          2 = asiatico 1.05
-          3 = europeo 1.35
-     */
      let cantidad;
      const base = 2000;
 
@@ -26,6 +21,14 @@ Seguro.prototype.cotizarSeguro = function() {
                break;
      }
 
+     switch(this.agencia){
+          case '1':
+               cantidad = cantidad * 0.9;
+               break;
+          case '2':
+               cantidad = cantidad * 0.7;
+     }
+
      // Leer el año
      const diferencia = new Date().getFullYear() - this.anio;
      // Cada año de diferencia hay que reducir 3% el valor del seguro
@@ -34,13 +37,13 @@ Seguro.prototype.cotizarSeguro = function() {
           Si el seguro es básico se múltiplica por 30% mas
           Si el seguro es completo 50% mas
      */
-    if(this.tipo === 'basico' && this.agencia === 'Si') {
+    if(this.tipo === 'basico') {
          cantidad *= 1.50;
-    } else if(this.tipo === 'basico' && this.agencia === 'No') {
+    } else if(this.tipo === 'basico') {
          cantidad *= 1.30;
-    }else if(this.tipo === 'completo' && this.agencia === 'Si'){
+    }else if(this.tipo === 'completo'){
          cantidad *= 2.50;
-    }else if(this.tipo === 'completo' && this.agencia === 'No'){
+    }else if(this.tipo === 'completo'){
          cantidad *= 2.30;
     }
 
@@ -84,6 +87,17 @@ Interfaz.prototype.mostrarResultado = function(seguro, total) {
                marca = 'Europeo';
                break;
      }
+
+     let agencia;
+     switch(seguro.agencia){
+          case '1':
+               agencia = 'Si';
+               break;
+          case '2':
+               agencia = 'No';
+               break;
+     }
+
      // Crear un div
      const div = document.createElement('div');
      div.classList.add('mt-10')
@@ -93,6 +107,7 @@ Interfaz.prototype.mostrarResultado = function(seguro, total) {
           <p class="font-bold">Marca: <span class="font-normal"> ${marca} </span> </p>
           <p class="font-bold">Año: <span class="font-normal"> ${seguro.anio} </span> </p>
           <p class="font-bold">Tipo: <span class="font-normal"> ${seguro.tipo} </span> </p>
+          <p class="font-bold">Agencia: <span class="font-normal"> ${agencia} </span> </p>
           <p class="font-bold"> Total: <span class="font-normal"> $ ${total} </span> </p>
      `;
 
@@ -137,13 +152,16 @@ formulario.addEventListener('submit', e =>  {
      // leer el año seleccionado del <select>
      const year = document.querySelector('#year').value
 
+     //leer si el auto es o no de agencia 
+     const agencia = document.querySelector('#agencia').value;
+
      // lee el valor del radio button
      const tipo = document.querySelector('input[name="tipo"]:checked').value;
 
  
 
      // Revisamos que los campos no esten vacios
-     if(marca === '' || year === '' || tipo === '') {
+     if(marca === '' || year === '' || tipo === '' || agencia === '') {
           // Interfaz imprimiendo un error
           interfaz.mostrarMensaje('Faltan datos, revisar el formulario y prueba de nuevo', 'error');
      } else {
@@ -154,7 +172,7 @@ formulario.addEventListener('submit', e =>  {
           }
 
           // Instanciar seguro y mostrar interfaz
-          const seguro = new Seguro(marca, year, tipo);
+          const seguro = new Seguro(marca, year, tipo, agencia);
           // Cotizar el seguro
           const cantidad = seguro.cotizarSeguro();
           // Mostrar el resultado
